@@ -1,0 +1,50 @@
+{
+	"name": "EKS Immersion Workshop",
+	"build":{
+		"dockerfile": "Dockerfile",
+		"target": "${env:DEVCONTAINER_TARGET_PREFIX}devcontainer" 
+	},
+	"runArgs": [
+		"-v", "${env:HOME}/.aws:/opt/app-root/src/.aws:Z",
+		"-v", "${env:HOME}/.kube:/opt/app-root/src/.kube:Z",
+		"-v", "${env:HOME}/.vs-kubernetes:/opt/app-root/src/.vs-kubernetes:Z",
+
+		// use local .oh-my-zsh configuration if it exists (overwriting one in container).
+		// comment the following line out if you want to use local installation on container instead
+		"-v", "${env:HOME}/.oh-my-zsh:/opt/app-root/src/.oh-my-zsh:Z",
+		"-v", "${env:HOME}/.helm:/opt/app-root/src/.helm:Z",
+		// mount npm cache locally
+		"-v", "${env:HOME}/.npm:/opt/app-root/src/.npm:Z",
+		// Used for AWS based clusters
+		"-e", "AWS_PROFILE=rhpds",
+		"-e", "REGION=ap-southeast-2"
+		//"AWS_PROFILE=${env:AWS_PROFILE}"
+	],
+	"postStartCommand": "rsync -a .devcontainer/workspace-setup/ ${containerWorkspaceFolder}/.vscode/ --ignore-existing",
+	// Make sure git lfs is initialized for the user
+	"postAttachCommand": "git lfs install",
+	"extensions": [
+		"joaompinto.asciidoctor-vscode",
+		"humao.rest-client",
+		"ms-kubernetes-tools.vscode-kubernetes-tools",
+		"haaaad.ansible"
+	],
+	"files.associations": {
+        "**/ansible/**/*": "ansible",
+		"ansible/": "ansible",
+        // "**/tasks/**/*.yml" : "ansible",
+        // "**/handler/*.yml" : "ansible",
+        // "**/*_vars/**/*.yml" : "ansible",
+        // "**/roles/**/*.yml" : "ansible",
+        // "**/playbooks/**/*.yml" : "ansible",
+        // "**/*ansible*/**/*.yml" : "ansible",
+        // "**/vars/**/*.yml": "ansible",
+        // "**/inventory/*/*": "ansible"
+    },
+	"settings":{
+		"terminal.integrated.shell.linux": "/bin/zsh",
+		"workbench.colorTheme": "Visual Studio 2019 Light",
+		"editor.tabCompletion": "on",
+		"editor.snippetSuggestions": "top"
+	}
+}
